@@ -37,7 +37,7 @@
 		<tr>
 			<th>Ngày</th>
 			<th>Giờ Bắt Đầu</th>
-			<th>Giờ Kết Thúc</th>
+			<th onload="startTime()">Giờ Kết Thúc</th>
 			<th>Thời Gian Sử Dụng</th>
 			<th>Trạng Thái</th>
 			<th>Chức năng</th>
@@ -75,15 +75,24 @@
 			insertRowTable(arr[0], arr[1], arr[2], arr[3], arr[4]);
 		}
 	});
-
-	// $.get('start', {}, function (data) {
-	// 	console.log(data);
-	// });
-
-	const source = new EventSource('/start');
-	source.onmessage = function logEvents(event){
-		alert(data);
-	}
 </script>
+<!-- start tile -->
+<script>
+	function startTime() {
+	  var today = new Date();
+	  var h = today.getHours();
+	  var m = today.getMinutes();
+	  var s = today.getSeconds();
+	  m = checkTime(m);
+	  s = checkTime(s);
+	  document.getElementById('txt').innerHTML =
+	  h + ":" + m + ":" + s;
+	  var t = setTimeout(startTime, 500);
+	}
+	function checkTime(i) {
+	  if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+	  return i;
+	}
+	</script>
 
 </html>

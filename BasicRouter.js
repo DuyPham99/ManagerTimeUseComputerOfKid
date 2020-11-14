@@ -3,6 +3,7 @@ var app = express();
 const path = require('path');
 const router = express.Router();
 var fs = require('fs');
+var prepend = require('prepend');
 
 router.get('/', function (req, res) {
   res.sendFile(path.join(__dirname + '/index.html'));
@@ -15,41 +16,23 @@ router.get('/data', function (req, res) {
   res.send(array);
 });
 
+
 router.get('/start', function (req, res) {
-  var date = new Date("dd/MM/yyyy");
-  var str = date.getDay().toString();
-  res.send("sdfsafdf");
-});
+  var day = new Date().getDate();
+  var month =  new Date().getMonth();
+  var year =  new Date().getFullYear();
+  var date = day + "/" + month + "/" + year;
+  var hours = new Date().getHours();
+  var minutes = new Date().getMinutes();
 
-// create helper middleware so we can reuse server-sent events
-const useServerSentEventsMiddleware = (req, res, next) => {
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
+  var writeFile = date + " " + hours + ":" + minutes + " " + "null" + " " + "null" + " " + "start";
 
-  // only if you want anyone to access this endpoint
-  res.setHeader('Access-Control-Allow-Origin', '*');
-
-  res.flushHeaders();
-
-  const sendEventStreamData = (data) => {
-      const sseFormattedResponse = `data: ${JSON.stringify(data)}\n\n`;
-      res.write(sseFormattedResponse);
-  }
-
-  // we are attaching sendEventStreamData to res, so we can use it later
-  Object.assign(res, {
-      sendEventStreamData
+  prepend(__dirname + '/data.txt', writeFile, function(error) {
+    if (error)
+        console.error(error.message);
   });
-
-  next();
-}
-
-const startTime = (req, res) => {
-      res.write("hello");
-}
-
-app.get('/start', useServerSentEventsMiddleware, 
-startTime)
+  res.redirect('/');
+});
 
 //add the router
 app.use('/', router);
