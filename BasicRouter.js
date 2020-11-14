@@ -24,8 +24,9 @@ router.get('/start', function (req, res) {
   var date = day + "/" + month + "/" + year;
   var hours = new Date().getHours();
   var minutes = new Date().getMinutes();
+  var seconds = new Date().getSeconds();
 
-  var writeFile = date + " " + hours + ":" + minutes + " " + "null" + " " + "null" + " " + "start";
+  var writeFile = date + " " + hours + ":" + minutes + ":" + seconds + " " + "null" + " " + "null" + " " + "start";
 
   prepend(__dirname + '/data.txt', writeFile, function(error) {
     if (error)
