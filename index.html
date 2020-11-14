@@ -40,25 +40,9 @@
 			<th>Giờ Kết Thúc</th>
 			<th>Thời Gian Sử Dụng</th>
 			<th>Trạng Thái</th>
+			<th>Chức năng</th>
 		</tr>
-		<tr>
-			<td>
-				Hello
-			</td>
-			<td>
-				Hello
-			</td>
-			<td>
-				Hello
-			</td>
-			<td>s
-				Hesss
-			</td>
-			<td>
-				HHIII
-			</td>
-			<td><button>Tắt máy</button></td>
-		</tr>
+
 	</table>
 </body>
 
@@ -73,20 +57,33 @@
 		var cell3 = row.insertCell(2);
 		var cell4 = row.insertCell(3);
 		var cell5 = row.insertCell(4);
+		var cell6 = row.insertCell(5);
 
 		cell1.innerHTML = param1;
 		cell2.innerHTML = param2;
 		cell3.innerHTML = param3;
 		cell4.innerHTML = param4;
+		if (param5.trim() == "end") {
+			param5 = "Kết thúc";
+		}
 		cell5.innerHTML = param5;
+		cell6.innerHTML = '<button>Tắt máy</button>';
 	}
 	$.get('data', {}, function (data) {
-			for (i in data) {
-				var arr = data[i].toString().split(" ");
-				insertRowTable(arr[0], arr[1], arr[2], arr[3], arr[4]);
-			}
+		for (i in data) {
+			var arr = data[i].toString().split(" ");
+			insertRowTable(arr[0], arr[1], arr[2], arr[3], arr[4]);
+		}
 	});
 
+	// $.get('start', {}, function (data) {
+	// 	console.log(data);
+	// });
+
+	const source = new EventSource('/start');
+	source.onmessage = function logEvents(event){
+		alert(data);
+	}
 </script>
 
 </html>
