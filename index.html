@@ -118,10 +118,12 @@
 			<th>Ngày</th>
 			<th>Giờ Bắt Đầu</th>
 			<th onload="startTime()">Giờ Kết Thúc</th>
-			<th>Thời Gian Sử Dụng</th>
+			<th id="">Thời Gian Sử Dụng</th>
 			<th>Trạng Thái</th>
 			<th>Chức năng</th>
 			<input id="dataHidden" type="hidden" value="">
+			<input id="end" type="hidden" value="">
+			<input id="total" type="hidden" value="">
 		</tr>
 
 	</table>
@@ -165,8 +167,6 @@
 			param4 = "<p id='totalTime' style='margin-top: 0px;margin-bottom: 0px;'></p>";
 
 			var dateParts = param1.split("/");
-
-
 			document.getElementById('dataHidden').value = dateParts[1] + "/" + dateParts[0] + "/" + dateParts[2] + " " + param2;
 		}
 
@@ -180,7 +180,8 @@
 		if (param5.trim() != "Đang hoạt động") {
 			var query = '<button type="button" disabled>Nhắc nhở</button>' + '<button type="button" disabled>Tắt máy</button>';
 		} else {
-			var query = '<button type="button"  onclick="openForm()">Nhắc nhở</button>' + '<button type="button" >Tắt máy</button>';
+
+			var query = '<button type="button"  onclick="openForm()">Nhắc nhở</button>' + '<button type="button" id="clickRow" >Tắt máy</button>';
 
 		}
 		cell6.innerHTML = query;
@@ -203,6 +204,7 @@
 		s = checkTime(s);
 		document.getElementById('runningTime').innerHTML =
 			h + ":" + m + ":" + s;
+		document.getElementById('end').value = h + ":" + m + ":" + s;
 		var t = setTimeout(startTime, 500);
 	}
 	function checkTime(i) {
@@ -232,6 +234,8 @@
 		// Display the result in the element with id="demo"
 		document.getElementById("totalTime").innerHTML = days + "d " + hours + "h "
 			+ minutes + "m " + seconds + "s ";
+		document.getElementById("total").value = days + "d:" + hours + "h:"
+			+ minutes + "m:" + seconds + "s";
 
 		// If the count down is finished, write some text
 		if (distance < 0) {
@@ -250,6 +254,17 @@
 		document.getElementById("myForm").style.display = "none";
 	}
 </script>
-
+<script>
+	$(document).ready(function () {
+		$("#clickRow").click(function () {
+			var end = document.getElementById("end").value;
+			var total = document.getElementById("total").value;
+			var rq = 'end?endTime=' + end.trim() + '&totalTime=' + total.trim();
+			$.get(rq, {}, function (data) {
+				location.reload();
+			});
+		});
+	});
+</script>
 
 </html>
