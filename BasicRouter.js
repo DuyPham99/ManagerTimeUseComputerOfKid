@@ -1,9 +1,14 @@
 var express = require('express');
+const http = require('http');
+const MessagingResponse = require('twilio').twiml.MessagingResponse;
 var app = express();
 const path = require('path');
 const router = express.Router();
 var fs = require('fs');
 var prepend = require('prepend');
+const accountSid = 'ACc338df292a27eb23e34c65600bef9abf';
+const authToken = 'dc75be38bd5acfd08da1c1bf852dd3d3';
+const client = require('twilio')(accountSid, authToken);
 
 router.get('/', function (req, res) {
   res.sendFile(path.join(__dirname + '/index.html'));
@@ -60,8 +65,24 @@ router.get('/end', function (req, res) {
   res.redirect('/'); 
 });
 
+app.get('/sms', (req, res) => {
+  client.messages
+  .create({body: '[CẢNH BÁO] Máy tính sử dụng đã vượt quá thời gian quy định!', from: '+12543646231', to: '+84588819322'})
+  .then(message => console.log(message.sid));
+  res.redirect('/');
+});
+
+app.post('/sms', (req, res) => {
+  const twiml = new MessagingResponse();
+  twiml.message('The Robots are coming! Head for the hills!');
+  res.writeHead(200, {'Content-Type': 'text/xml'});
+  console.log(rq.body);
+  res.end(twiml.toString());
+});
+
 //add the router
 app.use('/', router);
-app.listen(process.env.port || 3000);
-console.log('Running at Port 3000');
+app.listen(process.env.port || 1337);
+console.log('Running at Port 1337');
 
+//twilio phone-numbers:update "+12543646231" --sms-url="http://localhost:1337/sms"
