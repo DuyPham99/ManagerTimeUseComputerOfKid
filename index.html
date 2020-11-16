@@ -109,6 +109,7 @@
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://momentjs.com/downloads/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/vast-engineering/jquery-popup-overlay@2/jquery.popupoverlay.min.js"></script>
 </head>
 
 <body onload="startTime()">
@@ -128,13 +129,21 @@
 
 	</table>
 	<div class="form-popup" id="myForm">
-		<form action="/action_page.php" class="form-container">
+		<form action="/remind" method="get" class="form-container">
 			<h1>Lời nhắn</h1>
 			<textarea name="" id="" cols="37" rows="10"></textarea>
 			<button type="submit" class="btn">Gửi</button>
 			<button type="button" class="btn cancel" onclick="closeForm()">Đóng</button>
 		</form>
 	</div>
+	<hr>
+	<h2>CÀI ĐẶT THỜI GIAN SỬ DỤNG MÁY TÍNH</h2>
+	<form action="/setTime" method="post">
+		<input size="5" id="hours" name="hours" type="text" placeholder="Hours" value=""/> :
+		<input size="5" id="minutes" name="minutes" type="text" placeholder="Minute" value=""/> :
+		<input size="5" id="seconds" name="seconds" type="text" placeholder="Second" value="" />
+		<th> <input class="button" type="submit" value="Submit" /> </th>
+	</form>
 </body>
 
 <script>
@@ -192,6 +201,18 @@
 			insertRowTable(arr[0], arr[1], arr[2], arr[3], arr[4]);
 		}
 	});
+
+</script>
+<script>
+		$.get('dataSchedual', {}, function (data) {
+		// for (i in data) {
+		// 	var arr = data[i].toString().split(" ");
+		// 	insertRowTable(arr[0], arr[1], arr[2], arr[3], arr[4]);
+		// }
+		document.getElementById("hours").value = data[0];
+		document.getElementById("minutes").value = data[1];
+		document.getElementById("seconds").value = data[2];
+	});
 </script>
 <!-- start tile -->
 <script>
@@ -214,7 +235,6 @@
 </script>
 <script>
 	// Set the date we're counting down to
-
 	// Update the count down every 1 second
 	var x = setInterval(function () {
 		// Get today's date and time
@@ -231,16 +251,20 @@
 		var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
 		var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-		// Display the result in the element with id="demo"
-		document.getElementById("totalTime").innerHTML = days + "d " + hours + "h "
-			+ minutes + "m " + seconds + "s ";
-		document.getElementById("total").value = days + "d:" + hours + "h:"
-			+ minutes + "m:" + seconds + "s";
 
-		// If the count down is finished, write some text
-		if (distance < 0) {
-			clearInterval(x);
-			document.getElementById("totalTime").innerHTML = "EXPIRED";
+		if( minutes < 10) minutes = "0" + minutes;
+		if( seconds < 10) seconds = "0" + seconds;
+		console.log(seconds);
+		console.log(document.getElementById("seconds").value);
+		document.getElementById("totalTime").innerHTML = hours + "h "
+			+ minutes + "m " + seconds + "s ";
+		document.getElementById("total").value =  hours + "h:"
+			+ minutes + "m:" + seconds + "s";
+		
+		if (  hours == document.getElementById("hours").value 	
+		   && minutes === document.getElementById("minutes").value
+			&& seconds === document.getElementById("seconds").value ) {
+			document.getElementById("clickRow").click();
 		}
 	}, 1000);
 
@@ -266,5 +290,6 @@
 		});
 	});
 </script>
+
 
 </html>

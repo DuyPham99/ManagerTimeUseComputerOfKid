@@ -9,15 +9,37 @@ var prepend = require('prepend');
 const accountSid = 'ACc338df292a27eb23e34c65600bef9abf';
 const authToken = 'dc75be38bd5acfd08da1c1bf852dd3d3';
 const client = require('twilio')(accountSid, authToken);
+const bodyParser = require('body-parser');
+const { RSA_NO_PADDING } = require('constants');
+
+
 
 router.get('/', function (req, res) {
+  res.sendFile(path.join(__dirname + '/login.html'));
+  //__dirname : It will resolve to your project folder.
+});
+router.get('/index', function (req, res) {
   res.sendFile(path.join(__dirname + '/index.html'));
   //__dirname : It will resolve to your project folder.
+});
+
+router.post('/login', function (req, res) {
+    if (req.body.user.trim() === 'admin' && req.body.password.trim() === 'admin'){
+      //res.sendFile(path.join(__dirname + '/index.html'));
+      res.redirect('/index');
+    } else {
+      res.sendFile(path.join(__dirname + '/login.html'));
+    }
 });
 
 router.get('/data', function (req, res) {
   var data = fs.readFileSync('data.txt');
   var array = data.toString().split('\n');
+  if(data.length != 0) res.send(array);
+});
+router.get('/dataSchedual', function (req, res) {
+  var data = fs.readFileSync('schedual.txt');
+  var array = data.toString().split(':');
   if(data.length != 0) res.send(array);
 });
 
@@ -42,7 +64,7 @@ router.get('/start', function (req, res) {
         console.error(error.message);
   });
 
-  res.redirect('/');
+  res.redirect('/index');
 });
 
 router.get('/end', function (req, res) {
@@ -62,14 +84,14 @@ router.get('/end', function (req, res) {
   };
   str = str.trim();
   fs.writeFileSync('data.txt',str);
-  res.redirect('/'); 
+  res.redirect('/index');
 });
 
 app.get('/sms', (req, res) => {
   client.messages
   .create({body: '[CẢNH BÁO] Máy tính sử dụng đã vượt quá thời gian quy định!', from: '+12543646231', to: '+84588819322'})
   .then(message => console.log(message.sid));
-  res.redirect('/');
+  res.redirect('/index');
 });
 
 app.post('/sms', (req, res) => {
@@ -80,7 +102,18 @@ app.post('/sms', (req, res) => {
   res.end(twiml.toString());
 });
 
+router.post('/setTime', function (req, res) {
+  if(req.body.hours < 10) req.body.hours= "0" +req.body.hours;
+  if(req.body.minutes < 10) req.body.minutes = "0" + req.body.minutes;
+  if(req.body.seconds < 10) req.body.seconds = "0" + req.body.seconds;
+  var str = req.body.hours + ":" + req.body.minutes + ":" + req.body.seconds;
+  fs.writeFileSync('schedual.txt',str);
+  res.redirect('/index');
+});
+
 //add the router
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use('/', router);
 app.listen(process.env.port || 1337);
 console.log('Running at Port 1337');
